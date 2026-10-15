@@ -159,6 +159,34 @@ a{color:var(--accent-text);font-weight:600}
 .frame .line{font-family:var(--f-sub);font-weight:600;font-size:clamp(17px,4.6vw,27px);line-height:1.2;text-wrap:balance;text-shadow:0 0 2px #000,0 2px 6px rgba(0,0,0,.9),0 0 1px #000}
 .frame .where{position:absolute;top:28px;left:12px;font-size:12px;opacity:.75;text-shadow:0 1px 2px #000}
 .ctx{font-size:14px;color:var(--muted);margin-top:-6px}
+/* scene card: speaker photo + speech bubble */
+.scene{display:grid;grid-template-columns:auto minmax(0,1fr);gap:14px;align-items:start}
+.face{position:relative;width:104px;height:104px;border-radius:50%;padding:0;border:4px solid var(--accent);background:var(--sunk);box-shadow:0 4px 0 var(--accent-deep);overflow:visible;flex:none}
+.face img,.face .ini{width:100%;height:100%;border-radius:50%;object-fit:cover;object-position:50% 20%;display:block}
+.face .ini{display:grid;place-items:center;font-family:var(--f-display);font-size:34px;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.5)}
+.face .spk{position:absolute;right:-6px;bottom:-4px;width:36px;height:36px;border-radius:50%;background:var(--accent);color:var(--on-accent);display:grid;place-items:center;border:3px solid var(--bg)}
+.face .spk svg{width:18px;height:18px}
+.face:active{transform:translateY(3px);box-shadow:0 1px 0 var(--accent-deep)}
+.face.talking::after{content:"";position:absolute;inset:-12px;border-radius:50%;border:4px solid var(--accent);animation:pulse 1s ease-in-out infinite}
+@media (prefers-reduced-motion:reduce){.face.talking::after{animation:none}}
+.slow{margin-top:10px;font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;border:2px solid var(--line);background:var(--surface);color:var(--muted);border-radius:999px;padding:3px 8px;max-width:104px;display:block;margin-inline:auto}
+.bubble{position:relative;background:var(--surface);border:2px solid var(--line);border-radius:18px;padding:12px 14px;min-width:0}
+.bubble::before{content:"";position:absolute;left:-10px;top:30px;width:16px;height:16px;background:var(--surface);border-left:2px solid var(--line);border-bottom:2px solid var(--line);transform:rotate(45deg)}
+.bubble .meta{font-size:12px;color:var(--muted);display:flex;flex-wrap:wrap;gap:2px 8px;margin-bottom:6px}
+.bubble .meta b{font-family:var(--f-sub);letter-spacing:.12em;text-transform:uppercase;color:var(--accent-text)}
+.bubble .meta .code{font-family:var(--f-mono)}
+.bubble .line{margin:0;font-family:var(--f-sub);font-weight:600;font-size:clamp(19px,5vw,24px);line-height:1.35;overflow-wrap:anywhere}
+.w{font:inherit;color:inherit;background:none;border:0;padding:0 1px;border-bottom:2px dotted var(--muted);border-radius:2px;line-height:inherit}
+.w:hover,.w[aria-expanded="true"]{background:color-mix(in srgb,var(--accent) 25%,transparent);border-bottom-color:var(--accent-deep)}
+.tip{font-size:12px;color:var(--muted);margin-top:8px}
+.shot{width:100%;max-width:100%;border-radius:14px;display:block}
+.wpop{position:fixed;z-index:30;max-width:min(300px,calc(100vw - 32px));background:var(--surface);color:var(--ink);border:2px solid var(--line);border-radius:14px;box-shadow:0 10px 30px rgba(0,0,0,.25);padding:10px 12px;display:grid;gap:8px}
+.wpop .en{font-family:var(--f-sub);font-weight:600;font-size:18px}
+.wpop .ru{font-size:16px}
+.wpop .row{display:flex;gap:8px;flex-wrap:wrap}
+.wpop .row button{font-size:13px;font-weight:600;border:2px solid var(--line);background:var(--bg);border-radius:10px;padding:5px 10px;display:inline-flex;gap:6px;align-items:center}
+.wpop .row svg{width:16px;height:16px}
+@media (max-width:360px){.scene{grid-template-columns:1fr;justify-items:center}.bubble::before{display:none}.bubble{width:100%}}
 .ctx b{color:var(--ink);font-weight:600}
 .qcard{background:var(--surface);border:2px solid var(--line);border-radius:16px;padding:18px;font-size:22px;font-weight:600;text-align:center;line-height:1.3}
 .qcard small{display:block;font-size:14px;font-weight:400;color:var(--muted);margin-top:6px}
@@ -247,6 +275,7 @@ const I = {
   star:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z" fill="currentColor"/></svg>',
   reel:'<svg class="reel" viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="44" fill="none" stroke="currentColor" stroke-width="6"/><circle cx="50" cy="50" r="7" fill="currentColor"/><circle cx="50" cy="24" r="11" fill="currentColor"/><circle cx="50" cy="76" r="11" fill="currentColor"/><circle cx="24" cy="50" r="11" fill="currentColor"/><circle cx="76" cy="50" r="11" fill="currentColor"/></svg>',
   gear:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M5.3 18.7l2.1-2.1M16.6 7.4l2.1-2.1" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>',
+  speaker:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z" fill="currentColor"/><path d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>',
   camera:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h3l1.5-2h7L17 7h3a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><circle cx="12" cy="13" r="3.6" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>'
 };
 
@@ -1069,18 +1098,126 @@ function play(c, n, lesson){
 }
 const curTask = () => L.tasks[L.queue[L.pos]];
 
+/* ---------- speaker photos (Wikipedia), voice (built-in speech) and word lookup ---------- */
+const FACE_SLOT = "ptizasova.faces";
+let FACES = {}; try { FACES = JSON.parse(localStorage.getItem(FACE_SLOT)) || {}; } catch(e){}
+function saveFaces(){ try { localStorage.setItem(FACE_SLOT, JSON.stringify(FACES)); } catch(e){} }
+async function findFace(who, show){
+  const key = norm(show) + "|" + norm(who);
+  if (key in FACES) return FACES[key];
+  const toks = norm(who).split(" ").filter(t => t.length >= 3);
+  if (!toks.length) return "";
+  let url = "";
+  try {
+    const d = await mw(WP_EN, { action:"query", generator:"search", gsrsearch:`${who} ${show}`, gsrlimit:"8", gsrnamespace:"0", prop:"pageimages", piprop:"thumbnail", pithumbsize:"400", pilicense:"any" }, timeout(9000));
+    const pages = ((d.query && d.query.pages) || []).slice().sort((a, b) => (a.index || 0) - (b.index || 0));
+    const hit = pages.find(p => p.thumbnail && norm(p.title) !== norm(show) && toks.some(t => norm(p.title).split(" ").includes(t)));
+    url = hit ? hit.thumbnail.source : "";
+  } catch(e){ return ""; }          // network trouble: don't cache, try again next time
+  FACES[key] = url; saveFaces();
+  return url;
+}
+const timeout = ms => (window.AbortSignal && AbortSignal.timeout) ? AbortSignal.timeout(ms) : undefined;
+const initials = who => (String(who || "?").split(/\s+/).filter(Boolean).map(w => w[0]).join("").slice(0, 2) || "?").toUpperCase();
+
+function pickVoice(){
+  if (!window.speechSynthesis) return null;
+  const vs = speechSynthesis.getVoices().filter(v => /^en[-_]/i.test(v.lang));
+  const pref = ["Samantha","Daniel","Google US English","Google UK English Male","Alex","Karen","Moira","Microsoft Aria","Microsoft Guy"];
+  for (const n of pref) { const v = vs.find(x => x.name.includes(n)); if (v) return v; }
+  return vs.find(v => /en[-_]US/i.test(v.lang)) || vs[0] || null;
+}
+if (window.speechSynthesis) { try { speechSynthesis.getVoices(); speechSynthesis.onvoiceschanged = () => {}; } catch(e){} }
+function speak(text, rate, el){
+  if (!window.speechSynthesis || !text) { toast("Этот браузер не умеет озвучивать текст."); return; }
+  speechSynthesis.cancel();
+  document.querySelectorAll(".face.talking").forEach(n => n.classList.remove("talking"));
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = "en-US"; u.rate = rate || 0.95;
+  const v = pickVoice(); if (v) u.voice = v;
+  if (el) { el.classList.add("talking"); u.onend = u.onerror = () => el.classList.remove("talking"); }
+  speechSynthesis.speak(u);
+}
+function toast(msg){
+  const t = document.createElement("div"); t.className = "wpop"; t.setAttribute("role", "status");
+  t.style.left = "50%"; t.style.top = "calc(env(safe-area-inset-top,0px) + 16px)"; t.style.transform = "translateX(-50%)";
+  t.textContent = msg; document.body.appendChild(t); setTimeout(() => t.remove(), 2600);
+}
+
+/* every English word in a line becomes a tappable button */
+function tappable(line){
+  return String(line).split(/([A-Za-z][A-Za-z'’-]*)/).map((part, i) =>
+    i % 2 ? `<button class="w" data-w="${esc(part)}" aria-label="Перевод слова ${esc(part)}">${esc(part)}</button>` : esc(part)).join("");
+}
+const baseWord = w => w.toLowerCase().replace(/[’]/g, "'").replace(/'s$|'ll$|'re$|'ve$|'d$|'m$/,"").replace(/^-+|-+$/g, "");
+async function translateWord(w){
+  const b = baseWord(w);
+  if (DICT[b]) return DICT[b];
+  if (TR[b]) return TR[b];
+  let r = "";
+  try { const pipe = await loadTranslator(); const res = await pipe(b, { max_new_tokens:16 }); r = ((Array.isArray(res) ? res[0] : res) || {}).translation_text || ""; } catch(e){}
+  if (!r) { try { r = await myMemory(b); } catch(e){} }
+  r = String(r).replace(/[.!?]+$/, "").trim();
+  if (r) { TR[b] = r; saveTR(); }
+  return r;
+}
+function closeWord(){
+  document.querySelectorAll(".wpop[data-word]").forEach(n => n.remove());
+  document.querySelectorAll('.w[aria-expanded="true"]').forEach(n => n.setAttribute("aria-expanded", "false"));
+}
+async function showWord(btn){
+  const was = btn.getAttribute("aria-expanded") === "true";
+  closeWord(); if (was) return;
+  btn.setAttribute("aria-expanded", "true");
+  const w = btn.dataset.w, b = baseWord(w);
+  const pop = document.createElement("div");
+  pop.className = "wpop"; pop.dataset.word = b; pop.setAttribute("role", "dialog"); pop.setAttribute("aria-label", "Перевод слова");
+  pop.innerHTML = `<div class="en">${esc(b)}</div><div class="ru" id="wru">Перевожу…</div>
+    <div class="row"><button data-act="sayword" data-say="${esc(b)}">${I.speaker}Произнести</button><button data-act="addword" data-en="${esc(b)}" id="wadd" disabled>В словарь</button></div>`;
+  document.body.appendChild(pop);
+  const r = btn.getBoundingClientRect(), pw = pop.offsetWidth, ph = pop.offsetHeight;
+  let left = Math.min(Math.max(16, r.left + r.width / 2 - pw / 2), window.innerWidth - pw - 16);
+  let top = r.bottom + 8; if (top + ph > window.innerHeight - 16) top = Math.max(16, r.top - ph - 8);
+  pop.style.left = left + "px"; pop.style.top = top + "px";
+  const ru = await translateWord(w);
+  if (!pop.isConnected) return;
+  const el = pop.querySelector("#wru"), add = pop.querySelector("#wadd");
+  el.textContent = ru || "Не получилось перевести. Проверь интернет.";
+  if (ru) { add.disabled = false; add.dataset.ru = ru; if (S.vocab.some(v => norm(v[0]) === norm(b))) { add.textContent = "Уже в словаре"; add.disabled = true; } }
+}
+
 function frameHTML(t){
-  const s = t.scene;
-  const h = hash(s.line_en || s.where);
-  const bg = L.image
-    ? `<img class="img" src="${esc(L.image)}" alt="" referrerpolicy="no-referrer" style="${L.poster ? `object-position:${h % 100}% ${(h >> 4) % 100}%;transform:scale(1.35);filter:saturate(.85)` : ""}">${L.poster ? `<div class="wash" style="background:${MOODS[s.mood]||MOODS.night};opacity:.45;mix-blend-mode:multiply"></div>` : ""}`
-    : `<div class="wash" style="background:${MOODS[s.mood]||MOODS.night}"></div>`;
-  return `<figure class="frame" style="margin:0">
-    ${bg}
-    <div class="tc"><span class="rec">${esc(s.ep || "SCENE")}</span><span>${esc(s.time)}</span></div>
-    ${s.where ? `<div class="where">${esc(s.where)}</div>` : ""}
-    <figcaption class="subs">${s.who ? `<span class="who">${esc(s.who)}</span>` : ""}${s.line_en ? `<span class="line">${esc(s.line_en)}</span>` : ""}</figcaption>
-  </figure>${s.ctx_ru ? `<div class="ctx">${esc(s.ctx_ru)}</div>` : ""}`;
+  const s = t.scene, c = S.courses[L.key] || {};
+  const own = L.mode === "frame" && L.image;
+  const face = own ? `<img src="${esc(L.image)}" alt="">`
+    : s.face ? `<img src="${esc(s.face)}" alt="${esc(s.who)}" referrerpolicy="no-referrer">`
+    : `<span class="ini" style="background:${MOODS[s.mood] || MOODS.night}">${esc(initials(s.who))}</span>`;
+  const meta = [s.who ? `<b>${esc(s.who)}</b>` : "", s.ep ? `<span class="code">${esc(s.ep)}</span>` : "", s.where ? `<span>${esc(s.where)}</span>` : ""].filter(Boolean).join("");
+  return `${own ? `<img class="shot" src="${esc(L.image)}" alt="Твой кадр">` : ""}
+  <div class="scene">
+    <div>
+      <button class="face" id="face" data-act="speak" aria-label="Озвучить фразу${s.who ? ": " + esc(s.who) : ""}">${face}<span class="spk">${I.speaker}</span></button>
+      <button class="slow" data-act="speakslow">Медленно</button>
+    </div>
+    <div class="bubble">
+      ${meta ? `<div class="meta">${meta}${c.title_en && L.mode === "movie" ? `<span>· ${esc(c.title_en)}</span>` : ""}</div>` : ""}
+      <p class="line" lang="en">${tappable(s.line_en)}</p>
+      <div class="tip">Нажми на фото, чтобы послушать. Нажми на слово, чтобы узнать перевод.</div>
+    </div>
+  </div>${s.ctx_ru ? `<div class="ctx">${esc(s.ctx_ru)}</div>` : ""}`;
+}
+async function hydrateFace(t){
+  const s = t && t.scene;
+  if (!s || s.face || !s.who || L.mode !== "movie") return;
+  const c = S.courses[L.key]; if (!c) return;
+  const url = await findFace(s.who, c.title_en || c.title_ru || c.query);
+  if (!url) return;
+  s.face = url; save();
+  if (curTask() !== t) return;
+  const f = $("#face"); if (!f) return;
+  const img = new Image(); img.alt = s.who; img.referrerPolicy = "no-referrer";
+  img.onload = () => { const old = f.querySelector(".ini, img"); if (old) old.replaceWith(img); };
+  img.src = url;
 }
 function questionHTML(t){
   const q = esc(t.question).replace(/_{2,}/g, '<span class="gap"></span>');
@@ -1110,6 +1247,8 @@ function lessonView(){
 }
 function mountTask(){
   const t = curTask(), ans = $("#ans");
+  closeWord(); if (window.speechSynthesis) speechSynthesis.cancel();
+  hydrateFace(t);
   if (!t._opts && t.type === "choice") t._opts = shuffle(t.options.map((o,i)=>({o,i})));
   if (t.type === "build" && !t._tiles) {
     const words = t.answer_ru.replace(/[.,!?…;:«»"]/g,"").split(/\s+/).filter(Boolean);
@@ -1317,6 +1456,8 @@ function settingsView(){
       <div class="vrow"><b>Поиск фильма и постер</b><span>Википедия</span><small></small></div>
       <div class="vrow"><b>Перевод</b><span>мини-ИИ opus-mt-en-ru</span><small>в браузере</small></div>
       <div class="vrow"><b>Запасной перевод</b><span>MyMemory</span><small>если мини-ИИ не загрузился</small></div>
+      <div class="vrow"><b>Фото героев</b><span>Википедия</span><small></small></div>
+      <div class="vrow"><b>Озвучка</b><span>голос телефона</span><small>без интернета</small></div>
       <div class="vrow"><b>Субтитры с кадра</b><span>Tesseract</span><small>в браузере</small></div>
       <div class="vrow"><b>Слова</b><span>встроенный словарь</span><small>${THEMES.reduce((n,t)=>n+t.list.length,0)} слов</small></div>
     </div>
@@ -1351,8 +1492,10 @@ document.addEventListener("submit", e => {
   if (e.target.id === "searchForm") { e.preventDefault(); openCourse(e.target.q.value); }
 });
 document.addEventListener("click", e => {
+  if (!e.target.closest(".wpop, .w")) closeWord();
   const b = e.target.closest("button"); if (!b) return;
   const d = b.dataset;
+  if (d.w) return showWord(b);
   if (d.q) return openCourse(d.q);
   if (d.cefr) { S.cefr = d.cefr; save(); return render(); }
   if (d.open) { S.order = [d.open, ...S.order.filter(k=>k!==d.open)]; save(); return go({ name:"course", key:d.open }); }
@@ -1375,6 +1518,13 @@ document.addEventListener("click", e => {
     case "vocab": return go({ name:"vocab" });
     case "settings": return go({ name:"settings" });
     case "preload": return preloadMT();
+    case "speak": case "speakslow": { const t = L && curTask(); if (t && t.scene) speak(t.scene.line_en, d.act === "speakslow" ? 0.6 : 0.95, $("#face")); return; }
+    case "sayword": return speak(d.say, 0.8);
+    case "addword": {
+      if (!d.ru) return;
+      if (!S.vocab.some(v => norm(v[0]) === norm(d.en))) { const c = L && S.courses[L.key]; S.vocab.push([d.en, d.ru, c ? (c.title_ru || c.query) : ""]); save(); }
+      b.textContent = "Добавлено"; b.disabled = true; return;
+    }
     case "override": {
       const idx = L.queue[L.pos];
       if (L.appended) { L.queue.pop(); L.missed.delete(idx); L.appended = false; }
@@ -1388,7 +1538,7 @@ document.addEventListener("click", e => {
     case "check": return check();
     case "skip": { const t = curTask(); const right = t.type==="choice" ? t.options[t.answer] : t.type==="build" ? t.answer_ru : t.type==="type" ? t.accepted[0] : t.pairs.map(p=>p[0]+" — "+p[1]).join(", "); if (t.type==="choice") markOptions(t); return finish(false, right, "", false); }
     case "next": return next();
-    case "quit": case "tocourse": { const key = L ? L.key : route.key; L = null; return go({ name:"course", key }); }
+    case "quit": case "tocourse": { closeWord(); if (window.speechSynthesis) speechSynthesis.cancel(); const key = L ? L.key : route.key; L = null; return go({ name:"course", key }); }
     case "retry": { const c = S.courses[L.key]; const lesson = { tasks: L.tasks }; return play(c, L.n, lesson); }
   }
 });
