@@ -159,15 +159,6 @@ a{color:var(--accent-text);font-weight:600}
 .frame .line{font-family:var(--f-sub);font-weight:600;font-size:clamp(17px,4.6vw,27px);line-height:1.2;text-wrap:balance;text-shadow:0 0 2px #000,0 2px 6px rgba(0,0,0,.9),0 0 1px #000}
 .frame .where{position:absolute;top:28px;left:12px;font-size:12px;opacity:.75;text-shadow:0 1px 2px #000}
 .ctx{font-size:14px;color:var(--muted);margin-top:-6px}
-.frame .play{position:absolute;left:50%;top:44%;transform:translate(-50%,-50%);width:64px;height:64px;border-radius:50%;border:2px solid rgba(255,255,255,.85);background:rgba(0,0,0,.45);color:#fff;display:grid;place-items:center;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
-.frame .play svg{width:28px;height:28px;margin-left:4px}
-.frame .play:hover{background:rgba(0,0,0,.65)}
-.frame iframe{position:absolute;inset:0;width:100%;height:100%;border:0;z-index:2;background:#000}
-.frame .clipmsg{position:absolute;inset:0;z-index:2;display:grid;place-items:center;align-content:center;gap:10px;padding:16px;text-align:center;background:rgba(0,0,0,.72);font-size:15px}
-.frame .clipmsg a{color:#FFE27A}
-.cliprow{display:flex;flex-wrap:wrap;align-items:center;gap:6px 14px;margin-top:-6px;font-size:14px}
-.cliprow .sub{flex-basis:100%;font-family:var(--f-sub);font-weight:600;font-size:19px;line-height:1.25;color:var(--ink)}
-.cliprow .who{font-family:var(--f-sub);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent-text)}
 .ctx b{color:var(--ink);font-weight:600}
 .qcard{background:var(--surface);border:2px solid var(--line);border-radius:16px;padding:18px;font-size:22px;font-weight:600;text-align:center;line-height:1.3}
 .qcard small{display:block;font-size:14px;font-weight:400;color:var(--muted);margin-top:6px}
@@ -256,7 +247,6 @@ const I = {
   star:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z" fill="currentColor"/></svg>',
   reel:'<svg class="reel" viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="44" fill="none" stroke="currentColor" stroke-width="6"/><circle cx="50" cy="50" r="7" fill="currentColor"/><circle cx="50" cy="24" r="11" fill="currentColor"/><circle cx="50" cy="76" r="11" fill="currentColor"/><circle cx="24" cy="50" r="11" fill="currentColor"/><circle cx="76" cy="50" r="11" fill="currentColor"/></svg>',
   gear:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M5.3 18.7l2.1-2.1M16.6 7.4l2.1-2.1" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>',
-  play:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4.5v15l12-7.5z" fill="currentColor"/></svg>',
   camera:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h3l1.5-2h7L17 7h3a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><circle cx="12" cy="13" r="3.6" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>'
 };
 
@@ -880,7 +870,7 @@ function header(){
       <span class="stat" title="Дней подряд">${I.fire}${streakNow()}</span>
       <span class="stat" title="Опыт">${I.bolt}${S.xp}</span>
       <button class="stat" data-act="vocab" title="Мой словарь">${I.book}${S.vocab.length}</button>
-      <button class="stat" data-act="settings" title="Настройки" aria-label="Настройки и источники">${I.gear}</button>
+      <button class="stat" data-act="settings" title="Мини-ИИ" aria-label="Мини-ИИ и источники">${I.gear}</button>
     </div>
   </div>`;
 }
@@ -1079,77 +1069,6 @@ function play(c, n, lesson){
 }
 const curTask = () => L.tasks[L.queue[L.pos]];
 
-/* ---------- video moments: find a scene clip on YouTube and play it inside the lesson ---------- */
-const YT_SLOT = "ptizasova.ytkey", CLIP_SLOT = "ptizasova.clips";
-const ytKey = () => { try { return localStorage.getItem(YT_SLOT) || ""; } catch(e){ return ""; } };
-let CLIPS = {}; try { CLIPS = JSON.parse(localStorage.getItem(CLIP_SLOT)) || {}; } catch(e){}
-function saveClips(){ try { const ks = Object.keys(CLIPS); if (ks.length > 400) for (const k of ks.slice(0, ks.length - 400)) delete CLIPS[k]; localStorage.setItem(CLIP_SLOT, JSON.stringify(CLIPS)); } catch(e){} }
-const INVIDIOUS = ["https://inv.nadeko.net", "https://invidious.nerdvpn.de", "https://yewtu.be", "https://invidious.privacyredirect.com", "https://iv.melmac.space"];
-const PIPED = ["https://pipedapi.kavin.rocks", "https://api.piped.private.coffee", "https://pipedapi.adminforge.de"];
-const timeout = ms => (window.AbortSignal && AbortSignal.timeout) ? AbortSignal.timeout(ms) : undefined;
-async function searchClips(q){
-  if (CLIPS[q] && CLIPS[q].length) return CLIPS[q];
-  const enc = encodeURIComponent(q), MAXLEN = 900;
-  const tries = [];
-  const key = ytKey();
-  if (key) tries.push(async () => {
-    const r = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&videoEmbeddable=true&maxResults=8&q=${enc}&key=${encodeURIComponent(key)}`, { signal:timeout(8000) });
-    if (!r.ok) throw new Error("yt"); const j = await r.json();
-    return (j.items || []).map(x => x.id && x.id.videoId);
-  });
-  for (const h of shuffle(INVIDIOUS)) tries.push(async () => {
-    const r = await fetch(`${h}/api/v1/search?type=video&q=${enc}`, { signal:timeout(7000) });
-    if (!r.ok) throw new Error("inv"); const j = await r.json();
-    return (Array.isArray(j) ? j : []).filter(x => x.type === "video" && (!x.lengthSeconds || x.lengthSeconds <= MAXLEN)).map(x => x.videoId);
-  });
-  for (const h of shuffle(PIPED)) tries.push(async () => {
-    const r = await fetch(`${h}/search?filter=videos&q=${enc}`, { signal:timeout(7000) });
-    if (!r.ok) throw new Error("piped"); const j = await r.json();
-    return (j.items || []).filter(x => x.url && (!x.duration || x.duration <= MAXLEN)).map(x => { const m = String(x.url).match(/[?&]v=([\w-]{11})/); return m && m[1]; });
-  });
-  for (const t of tries) {
-    try { const ids = (await t()).filter(id => /^[\w-]{11}$/.test(id || "")); if (ids.length) { CLIPS[q] = [...new Set(ids)].slice(0, 8); saveClips(); return CLIPS[q]; } } catch(e){}
-  }
-  return [];
-}
-const clipQuery = t => { const c = S.courses[L.key] || {}; return `${c.title_en || c.title_ru || c.query || ""} ${t.scene.who || ""} ${t.scene.line_en}`.replace(/\s+/g, " ").trim(); };
-const ytSearchUrl = q => "https://www.youtube.com/results?search_query=" + encodeURIComponent(q);
-async function showClip(){
-  const t = curTask(), fig = $(".frame"); if (!t || !fig || !t.scene) return;
-  const q = clipQuery(t), lesson = L;
-  const old = fig.querySelector(".clipmsg, iframe"); if (old) old.remove();
-  fig.insertAdjacentHTML("beforeend", `<div class="clipmsg" role="status">Ищу этот момент на YouTube…</div>`);
-  const ids = await searchClips(q);
-  if (L !== lesson || curTask() !== t) return;
-  const msg = fig.querySelector(".clipmsg");
-  if (!ids.length) {
-    if (msg) msg.innerHTML = `<span>Не нашёл клип автоматически.</span><a href="${ytSearchUrl(q)}" target="_blank" rel="noopener">Открыть поиск на YouTube</a>`;
-    return;
-  }
-  L.clip = { ids, i:0, q, task:t };
-  drawClip();
-}
-function drawClip(){
-  const fig = $(".frame"), row = $("#cliprow"), c = L.clip; if (!fig || !c) return;
-  fig.querySelectorAll(".clipmsg, iframe").forEach(n => n.remove());
-  const id = c.ids[c.i];
-  fig.insertAdjacentHTML("beforeend", `<iframe src="https://www.youtube-nocookie.com/embed/${id}?autoplay=1&playsinline=1&rel=0&modestbranding=1&cc_load_policy=1&cc_lang_pref=en&hl=ru" title="Момент из фильма" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>`);
-  const s = c.task.scene;
-  if (row) {
-    row.hidden = false;
-    row.innerHTML = `${s.who ? `<span class="who">${esc(s.who)}</span>` : ""}<span class="sub">${esc(s.line_en)}</span>
-      ${c.ids.length > 1 ? `<button class="link" data-act="nextclip" style="padding:0">Не тот момент? Другое видео (${c.i + 1}/${c.ids.length})</button>` : ""}
-      <a href="${ytSearchUrl(c.q)}" target="_blank" rel="noopener">Искать на YouTube</a>
-      <button class="link" data-act="closeclip" style="padding:0">Закрыть видео</button>`;
-  }
-}
-function closeClip(){
-  const fig = $(".frame"), row = $("#cliprow");
-  if (fig) fig.querySelectorAll(".clipmsg, iframe").forEach(n => n.remove());
-  if (row) { row.hidden = true; row.innerHTML = ""; }
-  L.clip = null;
-}
-
 function frameHTML(t){
   const s = t.scene;
   const h = hash(s.line_en || s.where);
@@ -1161,8 +1080,7 @@ function frameHTML(t){
     <div class="tc"><span class="rec">${esc(s.ep || "SCENE")}</span><span>${esc(s.time)}</span></div>
     ${s.where ? `<div class="where">${esc(s.where)}</div>` : ""}
     <figcaption class="subs">${s.who ? `<span class="who">${esc(s.who)}</span>` : ""}${s.line_en ? `<span class="line">${esc(s.line_en)}</span>` : ""}</figcaption>
-    ${L.mode === "movie" && s.line_en ? `<button class="play" data-act="clip" aria-label="Смотреть этот момент">${I.play}</button>` : ""}
-  </figure><div class="cliprow" id="cliprow" hidden></div>${s.ctx_ru ? `<div class="ctx">${esc(s.ctx_ru)}</div>` : ""}`;
+  </figure>${s.ctx_ru ? `<div class="ctx">${esc(s.ctx_ru)}</div>` : ""}`;
 }
 function questionHTML(t){
   const q = esc(t.question).replace(/_{2,}/g, '<span class="gap"></span>');
@@ -1302,7 +1220,7 @@ function finish(ok, right, note, close){
 }
 function next(){
   if (L.hearts <= 0) return go({ name:"fail" });
-  L.pos++; L.state = "answer"; L.sel = null; L.built = []; L.typed = ""; L.pairsDone = new Set(); L.pairSel = null; L.pairErr = false; L.verdict = null; L.canOverride = false; L.clip = null;
+  L.pos++; L.state = "answer"; L.sel = null; L.built = []; L.typed = ""; L.pairsDone = new Set(); L.pairSel = null; L.pairErr = false; L.verdict = null; L.canOverride = false;
   if (L.pos >= L.queue.length) return complete();
   render();
 }
@@ -1389,27 +1307,16 @@ function settingsView(){
   const ready = !!MT.pipe || mtCached();
   return `<button class="link" data-act="home">← На главную</button>
   <section class="section">
-    <h2 style="font-size:24px">Настройки</h2>
-    <div class="eyebrow">Мини-ИИ</div>
+    <h2 style="font-size:24px">Мини-ИИ</h2>
     <p class="muted" style="margin:0">PTIZASOVA работает без подписок и без ключей. Реплики приложение ищет на Wikiquote (через Википедию находит нужный фильм), а переводит их маленькая нейросеть, которая работает прямо на твоём устройстве.</p>
     <div class="notice" id="mtStatus">${MT.pipe ? "<b>Мини-ИИ запущен.</b>" : ready ? "<b>Мини-ИИ скачан</b> и запустится при первом уроке." : "<b>Мини-ИИ ещё не скачан.</b> Он скачается сам при первом уроке по фильму (около 100 МБ, один раз)."}</div>
     ${MT.pipe ? "" : `<button class="btn" data-act="preload" id="preload">${ready ? "Запустить сейчас" : "Скачать сейчас"}</button>`}
-    <div class="eyebrow">Видео-моменты</div>
-    <p class="muted" style="margin:0">Кнопка ▶ на кадре ищет клип с этой сценой на YouTube и показывает его прямо в уроке, с английскими субтитрами. Поиск идёт через бесплатные открытые сервисы, и иногда они не отвечают. Чтобы поиск работал надёжнее, можно добавить бесплатный ключ YouTube Data API (около 100 поисков в день).</p>
-    <form id="ytForm" class="search" autocomplete="off">
-      <input id="ytkey" name="ytkey" type="password" placeholder="Ключ YouTube (необязательно)" aria-label="Ключ YouTube Data API" value="${esc(ytKey())}">
-      <button class="btn" type="submit">Сохранить</button>
-    </form>
-    ${ytKey() ? `<button class="link" data-act="delyt">Удалить ключ YouTube</button>` : ""}
-    ${route.ytSaved ? `<div class="notice" role="status"><b>Ключ YouTube сохранён.</b></div>` : ""}
-    <p class="muted" style="margin:0;font-size:14px">Где взять ключ: <a href="https://console.cloud.google.com/apis/library/youtube.googleapis.com" target="_blank" rel="noopener">console.cloud.google.com</a> → включи YouTube Data API v3 → Credentials → Create credentials → API key. Это бесплатно.</p>
     <div class="eyebrow">Откуда что берётся</div>
     <div class="vocablist">
       <div class="vrow"><b>Реплики</b><span>en.wikiquote.org</span><small></small></div>
       <div class="vrow"><b>Поиск фильма и постер</b><span>Википедия</span><small></small></div>
       <div class="vrow"><b>Перевод</b><span>мини-ИИ opus-mt-en-ru</span><small>в браузере</small></div>
       <div class="vrow"><b>Запасной перевод</b><span>MyMemory</span><small>если мини-ИИ не загрузился</small></div>
-      <div class="vrow"><b>Видео-моменты</b><span>YouTube</span><small>через Invidious/Piped</small></div>
       <div class="vrow"><b>Субтитры с кадра</b><span>Tesseract</span><small>в браузере</small></div>
       <div class="vrow"><b>Слова</b><span>встроенный словарь</span><small>${THEMES.reduce((n,t)=>n+t.list.length,0)} слов</small></div>
     </div>
@@ -1442,7 +1349,6 @@ async function onFrame(file){
 /* ---------- events ---------- */
 document.addEventListener("submit", e => {
   if (e.target.id === "searchForm") { e.preventDefault(); openCourse(e.target.q.value); }
-  if (e.target.id === "ytForm") { e.preventDefault(); try { const k = e.target.ytkey.value.trim(); if (k) localStorage.setItem(YT_SLOT, k); else localStorage.removeItem(YT_SLOT); } catch(err){} go({ name:"settings", ytSaved:true }); }
 });
 document.addEventListener("click", e => {
   const b = e.target.closest("button"); if (!b) return;
@@ -1469,10 +1375,6 @@ document.addEventListener("click", e => {
     case "vocab": return go({ name:"vocab" });
     case "settings": return go({ name:"settings" });
     case "preload": return preloadMT();
-    case "clip": return showClip();
-    case "nextclip": if (L && L.clip) { L.clip.i = (L.clip.i + 1) % L.clip.ids.length; drawClip(); } return;
-    case "closeclip": return closeClip();
-    case "delyt": try { localStorage.removeItem(YT_SLOT); } catch(e){} return go({ name:"settings" });
     case "override": {
       const idx = L.queue[L.pos];
       if (L.appended) { L.queue.pop(); L.missed.delete(idx); L.appended = false; }
